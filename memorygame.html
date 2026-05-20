@@ -1,0 +1,100 @@
+<!-- =========================
+FILE: index.html
+Put this in index.html
+========================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Memory Match Game</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>Memory Match Game</h1>
+
+    <p class="subtitle">
+      Upload images and play a matching game!
+    </p>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+
+      <button id="restartBtn">
+        Restart Game
+      </button>
+
+      <button id="loadBtn">
+        Load Saved Images
+      </button>
+
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+
+      <div class="stat-box">
+        Moves
+        <span id="moves">0</span>
+      </div>
+
+      <div class="stat-box">
+        Matches
+        <span id="matches">0</span>
+      </div>
+
+      <div class="stat-box">
+        Timer
+        <span id="timer">0</span>s
+      </div>
+
+    </div>
+
+    <!-- IMAGE UPLOAD -->
+    <div class="upload-section">
+
+      <h2>Upload Images</h2>
+
+      <input
+        type="file"
+        id="imageUpload"
+        multiple
+        accept="image/*"
+      >
+
+      <button id="saveBtn">
+        Save Images
+      </button>
+
+    </div>
+
+    <!-- SAVED IMAGES -->
+    <div class="saved-section">
+
+      <h2>Saved Images</h2>
+
+      <div id="savedGallery" class="gallery"></div>
+
+    </div>
+
+    <!-- GAME BOARD -->
+    <div class="game-section">
+
+      <h2>Game Board</h2>
+
+      <div id="gameBoard" class="game-board"></div>
+
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>

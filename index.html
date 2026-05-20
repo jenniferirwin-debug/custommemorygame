@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" type="webp" href="oldman.webp"/>
+<title>Memory Game – No Database</title>
+
+<style>
+
+body {
+    font-family: Arial;
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+
+    background: linear-gradient(135deg, #b8f7c6, #a8ddff);
+    min-height: 100vh;
+
+    color: #213C51;
+}
+
+/* TITLE */
+h1 {
+    color: #213C51;
+}
+
+
+#tutorial {
+    background: rgba(255, 255, 255, 0.45);
+    padding: 15px;
+    margin: 10px auto;
+    width: 600px;
+    border-radius: 12px;
+
+    backdrop-filter: blur(6px);
+
+    color: #213C51;
+    font-weight: 500;
+}
+
+
+button {
+    padding: 10px 16px;
+    margin: 6px;
+    border: none;
+    border-radius: 12px;
+
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+
+    cursor: pointer;
+
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(8px);
+
+    color: #213C51;
+
+    box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+
+    transition: all 0.25s ease;
+}
+
+button:hover {
+    transform: translateY(-3px) scale(1.03);
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.18);
+}
+
+button:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+#gameBoard {
+    display: grid;
+    grid-template-columns: repeat(5, 120px);
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+
+.card {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s, box-shadow 0.3s;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+
+.card.flipped {
+    transform: rotateY(180deg);
+}
+
+.card:hover {
+    transform: scale(1.06);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    z-index: 2;
+}
+
+.card.flipped:hover {
+    transform: rotateY(180deg) scale(1.06);
+}
+
+
+.front, .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 10px;
+}
+
+.front {
+    background: linear-gradient(135deg, #ff9ff3, #feca57);
+}
+
+.back {
+    transform: rotateY(180deg);
+}
+
+.back img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Customizable Memory Game!</h1>
+
+<div id="tutorial">
+Upload 5 images and load them. Then start memorizing! Good luck!
+</div>
+
+<input type="file" id="file" multiple>
+<button onclick="loadImages()">Load Images</button>
+<button id="startBtn" onclick="startGame()" disabled>Start Game</button>
+<button onclick="resetImages()">Reset</button>
+
+<div id="gameBoard"></div>
+
+<script>
+let storedImages = [];
+
+async function loadImages() {
+    const files = document.getElementById("file").files;
+
+    if (files.length !== 5) {
+        alert("You must upload EXACTLY 5 images.");
+        return;
+    }
+
+    storedImages = [];
+
+    for (let file of files) {
+        const data = await readFile(file);
+        storedImages.push(data);
+    }
+
+    document.getElementById("startBtn").disabled = false;
+    alert("Loaded 5 images!");
+}
+
+function readFile(file) {
+    return new Promise((resolve) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.readAsDataURL(file);
+    });
+}
+
+function startGame() {
+    if (storedImages.length !== 5) {
+        alert("Load 5 images first.");
+        return;
+    }
+
+    const board = document.getElementById("gameBoard");
+    board.innerHTML = "";
+
+    let cards = [...storedImages, ...storedImages];
+    cards.sort(() => Math.random() - 0.5);
+
+    let first = null;
+    let second = null;
+    let lock = false;
+
+    cards.forEach(img => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+            <div class="front"></div>
+            <div class="back"><img src="${img}"></div>
+        `;
+
+        card.onclick = () => {
+            if (lock || card.classList.contains("flipped")) return;
+
+            card.classList.add("flipped");
+
+            if (!first) {
+                first = card;
+            } else {
+                second = card;
+                lock = true;
+
+                const img1 = first.querySelector("img").src;
+                const img2 = second.querySelector("img").src;
+
+                if (img1 === img2) {
+                    first = null;
+                    second = null;
+                    lock = false;
+                } else {
+                    setTimeout(() => {
+                        first.classList.remove("flipped");
+                        second.classList.remove("flipped");
+                        first = null;
+                        second = null;
+                        lock = false;
+                    }, 700);
+                }
+            }
+        };
+
+        board.appendChild(card);
+    });
+}
+
+function resetImages() {
+    storedImages = [];
+    document.getElementById("startBtn").disabled = true;
+    document.getElementById("gameBoard").innerHTML = "";
+    alert("Images cleared.");
+}
+</script>
+
+</body>
+</html>
