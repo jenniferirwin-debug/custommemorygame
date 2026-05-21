@@ -7,7 +7,15 @@ const defaultImages = [
   "https://picsum.photos/id/1040/300/300"
 ];
 
+imageInput.addEventListener("change", async (e) => {
+  const file = e.target.files[0];
 
+const imageUrl = await uploadImage(file);
+
+console.log(imageUrl);
+
+images.push(imageUrl);
+  }
 
 let db;
 
