@@ -253,4 +253,41 @@ function resetImages() {
 </script>
 
 </body>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+
+const SUPABASE_URL = "PASTE YOUR PROJECT URL";
+const SUPABASE_KEY = "PASTE YOUR ANON KEY";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+async function uploadImage(file) {
+
+  const fileName = Date.now() + "-" + file.name;
+
+  // upload image
+  const { data, error } = await supabaseClient
+    .storage
+    .from("images")
+    .upload(fileName, file);
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  // get image url
+  const { data: publicUrlData } = supabaseClient
+    .storage
+    .from("images")
+    .getPublicUrl(fileName);
+
+  return publicUrlData.publicUrl;
+}
+
+</script>
 </html>
